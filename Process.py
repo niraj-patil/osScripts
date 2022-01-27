@@ -12,10 +12,13 @@ class Process:
         self.turnAroundTime=0
         self.executionTime=0
         self.completionTime=0
-        self.responseTime=0
+        #self.responseTime=0
     
-    def display(self):
-        print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.executionTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.responseTime} \t\t {self.turnAroundTime}")            
+    def displayP(self):
+        print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.turnAroundTime}")            
+    
+    def displayNP(self):
+        print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.executionTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.turnAroundTime}")            
     
     def reset(self):
         Process.totalExecutionTime=0
@@ -43,12 +46,16 @@ class Process:
                 processList.append(Process(i,arrivalTime,burstTime))
         return processList
     
+    def calculateExecutionTime(processList):
+        for process in processList:
+            process.executionTime=process.completionTime-process.burstTime
+    
     def calculateCompletionTime(processList):
         pass
             
     def calculateWaitTime(processList):
         for process in processList:
-            process.waitingTime=process.executionTime-process.arrivalTime
+            process.waitingTime=process.completionTime-process.burstTime-process.arrivalTime
             Process.averageWaitingTime+=process.waitingTime
         Process.averageWaitingTime/=len(processList)
 
@@ -58,15 +65,26 @@ class Process:
             Process.averageTurnAroundTime+=process.turnAroundTime
         Process.averageTurnAroundTime/=len(processList)
 
-    def calculate(processList):
+    def calculateNP(processList):
         Process.calculateCompletionTime(processList)
         Process.calculateWaitTime(processList)
         Process.calculateTurnAroundTime(processList)
+        
+    def calculate(processList):
+        Process.calculateWaitTime(processList)
+        Process.calculateTurnAroundTime(processList)
 
-    def displayOutput(processList):
-        print("ProcessName \t ArrivalTime \t BurstTime \t ExecutionTime \t CompletionTime\t WaitingTime\t ResponseTime \t TurnAroundTime")
+    def displayOutputNP(processList):
+        print("ProcessName \t ArrivalTime \t BurstTime \t ExecutionTime \t CompletionTime\t WaitingTime\t TurnAroundTime")
         for process in processList:
-            process.display()
+            process.displayNP()
+        print(f"Average Waiting Time\t\t:{Process.averageWaitingTime}")
+        print(f"Average Turn-Around Time\t:{Process.averageTurnAroundTime}")   
+        print(f"Total Execution Time\t\t:{Process.totalExecutionTime}\n")
+    def displayOutputP(processList):
+        print("ProcessName \t ArrivalTime \t BurstTime \t CompletionTime\t WaitingTime\t TurnAroundTime")
+        for process in processList:
+            process.displayP()
         print(f"Average Waiting Time\t\t:{Process.averageWaitingTime}")
         print(f"Average Turn-Around Time\t:{Process.averageTurnAroundTime}")   
         print(f"Total Execution Time\t\t:{Process.totalExecutionTime}\n")

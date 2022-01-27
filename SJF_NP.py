@@ -1,5 +1,6 @@
 from Process import Process
 processList=Process.createProcess()
+print("Shortest Job First-Non Preemptive")
 complete=[]
 ready=[]
 for process in processList:
@@ -24,6 +25,4 @@ while(len(ready)!=0):
         ready.append(processList.pop(0))  
     ready.sort(key=lambda x: x.burstTime)
 Process.calculate(complete)
-for process in complete:
-    process.responseTime=process.waitingTime
-Process.displayOutput(complete)
+Process.displayOutputNP(complete)
