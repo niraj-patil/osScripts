@@ -28,6 +28,8 @@ while(True):
         break
     
     ready.sort(key=lambda x: x.burstTime)
+    if(ready[0].responseTime==None):
+        ready[0].responseTime=Process.totalExecutionTime-ready[0].arrivalTime
     ready[0].burstTime-=1
     if(ready[0].burstTime==0):
         ready[0].completionTime=Process.totalExecutionTime+1

@@ -12,10 +12,10 @@ class Process:
         self.turnAroundTime=0
         self.executionTime=0
         self.completionTime=0
-        #self.responseTime=0
+        self.responseTime=None
     
     def displayP(self):
-        print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.turnAroundTime}")            
+        print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.responseTime} \t\t {self.turnAroundTime}")            
     
     def displayNP(self):
         print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.executionTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.turnAroundTime}")            
@@ -82,7 +82,7 @@ class Process:
         print(f"Average Turn-Around Time\t:{Process.averageTurnAroundTime}")   
         print(f"Total Execution Time\t\t:{Process.totalExecutionTime}\n")
     def displayOutputP(processList):
-        print("ProcessName \t ArrivalTime \t BurstTime \t CompletionTime\t WaitingTime\t TurnAroundTime")
+        print("ProcessName \t ArrivalTime \t BurstTime \t CompletionTime\t WaitingTime\t ResponseTime\t TurnAroundTime")
         for process in processList:
             process.displayP()
         print(f"Average Waiting Time\t\t:{Process.averageWaitingTime}")
