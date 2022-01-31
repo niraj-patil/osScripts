@@ -36,7 +36,7 @@ class Process:
         self.turnAroundTime=0
         self.executionTime=0
         self.completionTime=0
-        self.responseTime=0
+        self.responseTime=None
     
     """
     Creates processList
