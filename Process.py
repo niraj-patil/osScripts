@@ -1,10 +1,14 @@
+
 from random import randint
+import bisect
+from tkinter import N
+from tkinter.messagebox import NO
 
 class Process:
     currentExecutionTime=0                #Total Time CPU was under execution
     averageTurnAroundTime=0             
     averageWaitingTime=0
-    def __init__(self,id,arrivalTime,burstTime):
+    def __init__(self,id,arrivalTime,burstTime,priority):
         self.id=id						#Uniquely identifies the Process
         self.arrivalTime=arrivalTime	#Time at which process arrived into the system	
         self.burstTime=burstTime		#Amount of Time Required for a Process to complete its execution	
@@ -14,15 +18,21 @@ class Process:
         self.completionTime=0			#Time at which Process completes its execution	
         self.responseTime=None			#Time at which Process entered into Running State for the first time.
         								#WaitTime==ResponseTime in case of Non-Preemptive Algorithms
+        self.priority=priority          #Priority of a Process. Higher Priority will be given preference
     
     """
     Display Process Values
     """
     def displayP(self):
-        print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.responseTime} \t\t {self.turnAroundTime}")            
-    
+        if self.priority==None:
+            print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.responseTime} \t\t {self.turnAroundTime}")            
+        else:
+            print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.priority} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.responseTime} \t\t {self.turnAroundTime}")             
     def displayNP(self):
-        print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.executionTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.turnAroundTime}")            
+        if self.priority==None:
+            print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.executionTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.turnAroundTime}")            
+        else:
+             print(f"Process{self.id} \t {self.arrivalTime} \t\t {self.burstTime} \t\t {self.priority} \t\t {self.executionTime} \t\t {self.completionTime}  \t\t {self.waitingTime} \t\t {self.turnAroundTime}")            
     
     """
     The reset function resets all values except the id, arrivalTime and burstTime.
@@ -45,7 +55,7 @@ class Process:
         flag=int(input("0-User Input \n1-Random Values\nPlease Enter Your Choice Code:"))==1
         n=int(input("Enter Number of Process:"))
         if flag:
-            processList=[Process(i,randint(0,10),randint(1,10))for i in range (n)]
+            processList=[Process(i,randint(0,10),randint(1,10),randint(1,10))for i in range (n)]
             print("Process Generated\nProcessName \t ArrivalTime \t BurstTime")
             for i in processList:
                 print(f"Process{i.id} \t {i.arrivalTime} \t\t {i.burstTime}")
@@ -54,7 +64,7 @@ class Process:
             processList=[]
             for i in range (n):
                 arrivalTime, burstTime=[int(x) for x in input(f"Enter Arrival Time and Burst Time for Process{i}:").split()]
-                processList.append(Process(i,arrivalTime,burstTime))
+                processList.append(Process(i,arrivalTime,burstTime,None))
         return processList
     
     """
@@ -93,16 +103,41 @@ class Process:
     Displays Final Output
     """
     def displayOutputNP(processList):
-        print("ProcessName \t ArrivalTime \t BurstTime \t ExecutionTime \t CompletionTime\t WaitingTime\t TurnAroundTime")
+        if processList[0].priority==None:
+            print("ProcessName \t ArrivalTime \t BurstTime \t ExecutionTime \t CompletionTime\t WaitingTime\t TurnAroundTime")
+        else:
+            print("ProcessName \t ArrivalTime \t BurstTime \t Priority \t ExecutionTime \t CompletionTime\t WaitingTime\t TurnAroundTime")
         for process in processList:
             process.displayNP()
         print(f"Average Waiting Time\t\t:{Process.averageWaitingTime}")
         print(f"Average Turn-Around Time\t:{Process.averageTurnAroundTime}")   
         print(f"Total Execution Time\t\t:{Process.currentExecutionTime}\n")
     def displayOutputP(processList):
-        print("ProcessName \t ArrivalTime \t BurstTime \t CompletionTime\t WaitingTime\t ResponseTime\t TurnAroundTime")
+        if processList[0].priority==None:
+            print("ProcessName \t ArrivalTime \t BurstTime \t CompletionTime\t WaitingTime\t ResponseTime\t TurnAroundTime")
+        else:
+            print("ProcessName \t ArrivalTime \t BurstTime \t Priority \t CompletionTime\t WaitingTime\t ResponseTime\t TurnAroundTime")
         for process in processList:
             process.displayP()
         print(f"Average Waiting Time\t\t:{Process.averageWaitingTime}")
         print(f"Average Turn-Around Time\t:{Process.averageTurnAroundTime}")   
-        print(f"Total Execution Time\t\t:{Process.currentExecutionTime}\n")
+        print(f"Total Execution Time\t\t:{Process.currentExecutionTime}\n")    
+    """
+    Less than operator. Whenever two Processes are compared using less than operator
+    This function defines its behavior
+    if(Priority is None i.e function call is from SJF):
+        compare using burst time
+    else:
+        compare using priority
+    """
+    def __lt__(self, other):
+        if(self.priority==None):
+            return self.burstTime < other.burstTime
+        else:
+            return self.priority < other.priority
+    """
+    The bisect function is used to insert an element into a sorted list
+    It uses the Less than(<) sign to make comparisons
+    """
+    def insert(processList,process):
+        bisect.insort_left(processList, process)

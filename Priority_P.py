@@ -19,17 +19,17 @@ As we are going to overwrite them in the Algorithm
 burstTime={}
 for process in processList:
     burstTime.update({process.id:process.burstTime})
-
-
-print("Shortest Job First Preemptive")
+print("Priority(Preemptive)")
 """
+Initializing Priority if not Initialized Randomly
 """
-
-    
+if processList[0].priority==None:
+    for process in processList:
+        process.priority=int(input(f"Enter Priority for Process{process.id}:"))    
 """
-Sorting List such that we get Process with the lowest Arrival Time and Burst Time
+Sorting List such that we get Process with the lowest Arrival Time and highest Priority
 """
-processList.sort(key=lambda x: x.burstTime)
+processList.sort(key=lambda x: x.priority,reverse=True)
 processList.sort(key=lambda x: x.arrivalTime)
 """
 Removing the 0th Element(lowest Arrival Time and Burst Time) from Process List and
