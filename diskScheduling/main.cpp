@@ -7,10 +7,13 @@ int main(){
     Disk disk;
     Table fcfs=disk.fcfs();
     Table sstf=disk.sstf();
+    Table scan=disk.scan();
 
     fcfs.display("FCFS");
     sstf.display("SSTF");
-    
+    scan.display("SCAN");
+
+    cout<<"-----------------"<<endl;
     cout<<"Average Seek Time"<<endl;
     cout<<"-----------------"<<endl;
     cout<<"FCFS\t:"<<fcfs.averageSeekTime<<endl;

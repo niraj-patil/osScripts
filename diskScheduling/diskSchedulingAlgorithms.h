@@ -1,6 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <bits/stdc++.h>
+
+#include <stdlib.h>
+#include<time.h>
 using namespace std;
 
 class Table{
@@ -21,9 +24,11 @@ class Table{
             averageSeekTime=totalSeekTime/size;
         }
         void display(string name){
-            cout<<"<<"<<name<<">>";
+            cout<<"\n<<"<<name<<">>";
             cout<<"\nFORM\tTO\tSEEKTIME\n";
-            for(int i=0;i<size;i++){
+            cout<<*(from)<<"\t"<<*(to)<<"\t"<<*(seekTime)<<"\n";
+            for(int i=1;i<size;i++){
+                if(*(from+i)==*(to+i)) continue;
                 cout<<*(from+i)<<"\t"<<*(to+i)<<"\t"<<*(seekTime+i)<<"\n";
             }
             cout<<"Total Seek Time:"<<totalSeekTime<<endl;
@@ -34,20 +39,34 @@ class Table{
 class Disk{
     vector <int> requestQueue;
     int start;
+    bool directionMin;
+    int diskSize=200;
     public:
     int size;
     Disk(){
-        cout<<"Enter Request Queue:";
-        while(true){
-            int temp;
-            cin>>temp;   
-            requestQueue.push_back(temp);
-            if(cin.get()=='\n')break;    
+        cout<<"1. Randomly Generate Requests(Default)\n2. Manually Enter Request\nEnter Choice:";
+        int temp;
+        cin>>temp;
+        if (temp!=2){
+            srand(time(0));
+            cout<<"Enter Number of Requests:";
+            cin>>size;
+            for(int i=0;i<size;i++){
+                requestQueue.push_back(rand()%diskSize);
+            }
+        }else{
+            cout<<"Enter Request Queue:";
+            while(true){
+                int temp;
+                cin>>temp;   
+                requestQueue.push_back(temp);
+                if(cin.get()=='\n')break;    
+            }
+            size=requestQueue.size();   
         }
-
-
-        size=requestQueue.size();
-
+        cout<<"1. Towards Minimum(default)\n2. Towards Maximum\nEnter Scanning Direction:";
+        cin>>temp;
+        directionMin=(temp!=2);
         cout<<"Enter Start Location:";
         cin>>start;  
     }
@@ -128,5 +147,79 @@ class Disk{
         }
         sstf.calculateSeekTime();
         return sstf;
+    }
+    Table scan(){
+        Table scan(size+1);
+        vector<int> unvisited=requestQueue;
+        int i,turn,k=0;
+        sort(unvisited.begin(), unvisited.end());
+        for(i=0;i<size;i++){
+            if(unvisited[i]>start) break;
+        }
+        turn=i;
+        if(directionMin) {
+            if(i==0){
+                if(start!=0){
+                    *(scan.from+k)=start;
+                    *(scan.to+k)=0;
+                    k++;
+                }  
+            }else{
+                i--;
+                *(scan.from+k)=start;
+                *(scan.to+k)=unvisited[i];
+                k++;
+                while(i>0){
+                    *(scan.from+k)=unvisited[i];
+                    *(scan.to+k)=unvisited[i-1];
+                    k++;
+                    i--;
+                }
+                *(scan.from+k)=unvisited[0];
+                *(scan.to+k)=0;
+                k++;  
+            }
+            *(scan.from+k)=0;
+            *(scan.to+k)=unvisited[turn];
+            k++;
+            for(int j=turn;j<size-1;j++){
+                *(scan.from+k)=unvisited[j];
+                *(scan.to+k)=unvisited[j+1];
+                k++;
+            }      
+        }
+        else{
+            if(i==size){
+                if(start!=diskSize-1){
+                    *(scan.from+k)=start;
+                    *(scan.to+k)=diskSize-1;
+                    k++;
+                }  
+            }else{
+                *(scan.from+k)=start;
+                *(scan.to+k)=unvisited[i];
+                k++;
+                while(i<size-1){
+                    *(scan.from+k)=unvisited[i];
+                    *(scan.to+k)=unvisited[i+1];
+                    k++;
+                    i++;
+                }
+                *(scan.from+k)=unvisited[i];
+                *(scan.to+k)=diskSize-1;
+                k++;  
+            }
+            turn--;
+            *(scan.from+k)=diskSize-1;
+            *(scan.to+k)=unvisited[turn];
+            k++;
+            for(int j=turn;j>0;j--){
+                *(scan.from+k)=unvisited[j];
+                *(scan.to+k)=unvisited[j-1];
+                k++;
+            } 
+        }
+        scan.calculateSeekTime();
+        return scan;
     }
 };
