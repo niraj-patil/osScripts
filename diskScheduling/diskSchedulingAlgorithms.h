@@ -143,7 +143,6 @@ class Disk{
             *(sstf.from+i)=_closest;
             _closest=closest(unvisited,_closest);
             *(sstf.to+i)=_closest;
-            cout<<">"<<_closest<<endl;
         }
         sstf.calculateSeekTime();
         return sstf;

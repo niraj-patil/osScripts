@@ -18,6 +18,7 @@ int main(){
     cout<<"-----------------"<<endl;
     cout<<"FCFS\t:"<<fcfs.averageSeekTime<<endl;
     cout<<"SSTF\t:"<<sstf.averageSeekTime<<endl;
+    cout<<"SCAN\t:"<<scan.averageSeekTime<<endl;
     cout<<"-----------------"<<endl;
     
     return 0;
