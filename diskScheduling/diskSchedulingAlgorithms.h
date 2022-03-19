@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <bits/stdc++.h>
-
 #include <stdlib.h>
 #include<time.h>
 using namespace std;
@@ -72,25 +71,31 @@ class Disk{
     }
 
     int closest(vector<int> &vec, int value) {
-        int j,temp,_closest,index;
-        for(j=0;j<size;j++){
-            if(vec[j]==NULL) continue;
-            else{
-                temp=abs(vec[j]-value);
+        int i,j,_closest;
+        bool allNull=true;
+        for(i=0;i<size;i++){
+            if(vec[i]==NULL) continue;
+            if(vec[i]>value) break;
+            if(vec[i]!=NULL) allNull=false;
+        }      
+        if(i==0 || allNull) {
+            _closest=vec[i];
+            vec[i]=NULL;
+            return _closest;
+            }
+        else{
+            for(j=i-1;j>=0;j--){
+                if(vec[j]!=NULL) break;
+            }
+            if(abs(vec[i]-value)>abs(vec[j]-value)){
                 _closest=vec[j];
-                break;
+                vec[j]=NULL;
+            }
+            else{
+                _closest=vec[i];
+                vec[i]=NULL;
             }
         }
-        for(int i=j+1;i<size-j-1;i++){
-            if(vec[i]==NULL) continue;
-            if(abs(vec[i]-value)<temp){
-                temp=abs(vec[i]-value);
-                _closest=vec[i];
-                j=i;
-            } 
-            if(abs(vec[i+1]-value)>=temp) break;
-        }      
-        vec[j]=NULL;
         return _closest;
     }
 
@@ -127,19 +132,12 @@ class Disk{
         return fcfs;
     }
     Table sstf(){
-        int _closest;
+        int _closest=start;
         Table sstf(size);
         vector<int> unvisited=requestQueue;
         sort(unvisited.begin(), unvisited.end());
-        _closest=start;
+
         for(int i=0;i<size;i++){
-            if(isVisited(requestQueue,i-1,requestQueue[i])||requestQueue[i]==start) {
-                    *(sstf.from+i)=NULL;
-                    *(sstf.to+i)=requestQueue[i];
-                    *(sstf.seekTime+i)=0;
-                    continue;
-                }
-           
             *(sstf.from+i)=_closest;
             _closest=closest(unvisited,_closest);
             *(sstf.to+i)=_closest;
