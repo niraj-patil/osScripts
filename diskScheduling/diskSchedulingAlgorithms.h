@@ -16,7 +16,6 @@ class Table{
         { size=_size;};
         void calculateSeekTime(){
             for(int i=0;i<size;i++){
-                if(*(from+i)==NULL) continue;
                 *(seekTime+i)=abs(*(from+i)-*(to+i));
                 totalSeekTime+=*(seekTime+i);
             }
@@ -57,17 +56,17 @@ class Disk{
             cout<<"Enter Request Queue:";
             while(true){
                 int temp;
-                cin>>temp;   
+                cin>>temp;
                 requestQueue.push_back(temp);
-                if(cin.get()=='\n')break;    
+                if(cin.get()=='\n')break;
             }
-            size=requestQueue.size();   
+            size=requestQueue.size();
         }
         cout<<"1. Towards Minimum(default)\n2. Towards Maximum\nEnter Scanning Direction:";
         cin>>temp;
         directionMin=(temp!=2);
         cout<<"Enter Start Location:";
-        cin>>start;  
+        cin>>start;
     }
 
     int closest(vector<int> &vec, int value) {
@@ -77,7 +76,7 @@ class Disk{
             if(vec[i]==NULL) continue;
             if(vec[i]>value) break;
             if(vec[i]!=NULL) allNull=false;
-        }      
+        }
         if(i==0 || allNull) {
             _closest=vec[i];
             vec[i]=NULL;
@@ -105,7 +104,7 @@ class Disk{
         }
         return false;
     }
-    
+
     Table fcfs(){
         Table fcfs(size);
         int repeatFlag=0;
@@ -160,7 +159,7 @@ class Disk{
                     *(scan.from+k)=start;
                     *(scan.to+k)=0;
                     k++;
-                }  
+                }
             }else{
                 i--;
                 *(scan.from+k)=start;
@@ -174,7 +173,7 @@ class Disk{
                 }
                 *(scan.from+k)=unvisited[0];
                 *(scan.to+k)=0;
-                k++;  
+                k++;
             }
             *(scan.from+k)=0;
             *(scan.to+k)=unvisited[turn];
@@ -183,7 +182,7 @@ class Disk{
                 *(scan.from+k)=unvisited[j];
                 *(scan.to+k)=unvisited[j+1];
                 k++;
-            }      
+            }
         }
         else{
             if(i==size){
@@ -191,7 +190,7 @@ class Disk{
                     *(scan.from+k)=start;
                     *(scan.to+k)=diskSize-1;
                     k++;
-                }  
+                }
             }else{
                 *(scan.from+k)=start;
                 *(scan.to+k)=unvisited[i];
@@ -204,7 +203,7 @@ class Disk{
                 }
                 *(scan.from+k)=unvisited[i];
                 *(scan.to+k)=diskSize-1;
-                k++;  
+                k++;
             }
             turn--;
             *(scan.from+k)=diskSize-1;
@@ -214,9 +213,81 @@ class Disk{
                 *(scan.from+k)=unvisited[j];
                 *(scan.to+k)=unvisited[j-1];
                 k++;
-            } 
+            }
         }
         scan.calculateSeekTime();
         return scan;
     }
+    Table look(){
+        Table look(size+1);
+        vector<int> unvisited=requestQueue;
+        int i,turn,k=0;
+        sort(unvisited.begin(), unvisited.end());
+        for(i=0;i<size;i++){
+            if(unvisited[i]>start) break;
+        }
+        turn=i;
+        if(directionMin) {
+            if(i==0){
+                if(start!=0){
+                    *(look.from+k)=start;
+                    *(look.to+k)=0;
+                    k++;
+                }
+            }else{
+                i--;
+                *(look.from+k)=start;
+                *(look.to+k)=unvisited[i];
+                k++;
+                while(i>0){
+                    *(look.from+k)=unvisited[i];
+                    *(look.to+k)=unvisited[i-1];
+                    k++;
+                    i--;
+                }
+                *(look.from+k)=unvisited[0];
+            }
+            *(look.to+k)=unvisited[turn];
+            k++;
+            for(int j=turn;j<size-1;j++){
+                *(look.from+k)=unvisited[j];
+                *(look.to+k)=unvisited[j+1];
+                k++;
+            }
+        }
+        else{
+            if(i==size){
+                if(start!=diskSize-1){
+                    *(look.from+k)=start;
+                    *(look.to+k)=diskSize-1;
+                    k++;
+                }
+            }else{
+                *(look.from+k)=start;
+                *(look.to+k)=unvisited[i];
+                k++;
+                while(i<size-1){
+                    *(look.from+k)=unvisited[i];
+                    *(look.to+k)=unvisited[i+1];
+                    k++;
+                    i++;
+                }
+                *(look.from+k)=unvisited[i];
+                *(look.to+k)=diskSize-1;
+                k++;
+            }
+            turn--;
+            *(look.from+k)=diskSize-1;
+            *(look.to+k)=unvisited[turn];
+            k++;
+            for(int j=turn;j>0;j--){
+                *(look.from+k)=unvisited[j];
+                *(look.to+k)=unvisited[j-1];
+                k++;
+            }
+        }
+        look.calculateSeekTime();
+        return look;
+    }
 };
+
