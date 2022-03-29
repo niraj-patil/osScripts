@@ -23,7 +23,7 @@ class Table{
         }
         void display(string name){
             cout<<"\n<<"<<name<<">>";
-            cout<<"\nFORM\tTO\tSEEKTIME\n";
+            cout<<"\nFROM\tTO\tSEEKTIME\n";
             cout<<*(from)<<"\t"<<*(to)<<"\t"<<*(seekTime)<<"\n";
             for(int i=1;i<size;i++){
                 if(*(from+i)==*(to+i)) continue;
